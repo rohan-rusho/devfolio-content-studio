@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — DevFolio CMS</title>
+  <meta name="description" content="DevFolio CMS admin dashboard: manage portfolio projects, skills, experience, blog posts and documents.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">Dev<span>Folio</span></a>
+      <nav>
+        <a href="index.html">View portfolio</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="pin-gate" id="pinGate">
+      <div class="card">
+        <h1>Admin</h1>
+        <p class="muted">Enter your PIN to manage this portfolio. The default PIN is <strong>1234</strong> — change it in Settings once you are in.</p>
+        <form id="pinForm" class="stacked">
+          <label>PIN
+            <input type="password" id="pinInput" inputmode="numeric" autocomplete="current-password" required>
+          </label>
+          <button class="btn" type="submit">Unlock admin</button>
+        </form>
+        <p class="status status-error" id="pinError" hidden></p>
+      </div>
+    </div>
+
+    <div id="adminApp" hidden>
+      <div class="admin-head" style="margin-top: 24px;">
+        <h1 style="margin: 0;">Admin dashboard</h1>
+        <span class="spacer"></span>
+        <a class="btn btn-ghost" href="index.html" target="_blank" rel="noopener">Live preview</a>
+        <button class="btn btn-ghost" id="logoutBtn" type="button">Lock</button>
+      </div>
+
+      <div class="admin-note">
+        <strong>Local-only admin.</strong> Your content is stored in this browser (localStorage). There is no server and no real multi-user login in v1 — the PIN only keeps casual visitors out of these screens. Export a JSON backup from Settings before clearing browser data.
+      </div>
+
+      <p class="status" id="statusMsg" hidden></p>
+
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="projects" type="button">Projects</button>
+        <button class="tab-btn" data-tab="skills" type="button">Skills</button>
+        <button class="tab-btn" data-tab="experience" type="button">Experience</button>
+        <button class="tab-btn" data-tab="blog" type="button">Blog</button>
+        <button class="tab-btn" data-tab="documents" type="button">Documents</button>
+        <button class="tab-btn" data-tab="settings" type="button">Settings</button>
+      </div>
+
+      <div class="tab-panel" id="panel-projects">
+        <h2>Projects</h2>
+        <div id="projectsList"></div>
+        <form id="projectForm" class="stacked" style="margin-top: 20px;">
+          <input type="hidden" id="pf-id">
+          <label>Title
+            <input type="text" id="pf-title" required>
+          </label>
+          <label>Type (e.g. Web App, Tool, Open Source)
+            <input type="text" id="pf-type" placeholder="Web App">
+          </label>
+          <label>Description
+            <textarea id="pf-desc"></textarea>
+          </label>
+          <label>Stack (comma-separated)
+            <input type="text" id="pf-stack" placeholder="JavaScript, Node.js">
+          </label>
+          <label>Repository URL
+            <input type="url" id="pf-repo" placeholder="https://github.com/rohan-rusho/...">
+          </label>
+          <label>Live site URL (optional)
+            <input type="url" id="pf-live" placeholder="https://...">
+          </label>
+          <label>Gallery image URLs (comma-separated, optional)
+            <input type="text" id="pf-gallery" placeholder="https://.../screenshot.png">
+          </label>
+          <div class="form-row">
+            <button class="btn" type="submit" id="pf-submit">Add project</button>
+            <button class="btn btn-ghost" type="button" id="pf-cancel" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="tab-panel" id="panel-skills" hidden>
+        <h2>Skills</h2>
+        <div id="skillsList"></div>
+        <form id="skillForm" class="stacked" style="margin-top: 20px;">
+          <input type="hidden" id="sf-id">
+          <label>Group name
+            <input type="text" id="sf-group" placeholder="Languages" required>
+          </label>
+          <label>Skills (comma-separated)
+            <input type="text" id="sf-items" placeholder="Java, Kotlin, Flutter">
+          </label>
+          <div class="form-row">
+            <button class="btn" type="submit" id="sf-submit">Add skill group</button>
+            <button class="btn btn-ghost" type="button" id="sf-cancel" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="tab-panel" id="panel-experience" hidden>
+        <h2>Experience</h2>
+        <div id="experienceList"></div>
+        <form id="experienceForm" class="stacked" style="margin-top: 20px;">
+          <input type="hidden" id="ef-id">
+          <label>Role
+            <input type="text" id="ef-role" required>
+          </label>
+          <label>Organisation / project
+            <input type="text" id="ef-org">
+          </label>
+          <label>Period
+            <input type="text" id="ef-period" placeholder="2026">
+          </label>
+          <label>Description
+            <textarea id="ef-desc"></textarea>
+          </label>
+          <div class="form-row">
+            <button class="btn" type="submit" id="ef-submit">Add experience</button>
+            <button class="btn btn-ghost" type="button" id="ef-cancel" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="tab-panel" id="panel-blog" hidden>
+        <h2>Blog</h2>
+        <div id="blogList"></div>
+        <form id="blogForm" class="stacked" style="margin-top: 20px;">
+          <input type="hidden" id="bf-id">
+          <label>Title
+            <input type="text" id="bf-title" required>
+          </label>
+          <label>Date
+            <input type="date" id="bf-date">
+          </label>
+          <label>Body (blank lines start a new paragraph)
+            <textarea id="bf-body" style="min-height: 220px;"></textarea>
+          </label>
+          <div class="form-row">
+            <button class="btn" type="submit" id="bf-submit">Add post</button>
+            <button class="btn btn-ghost" type="button" id="bf-cancel" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="tab-panel" id="panel-documents" hidden>
+        <h2>Documents</h2>
+        <div id="documentsList"></div>
+        <form id="documentForm" class="stacked" style="margin-top: 20px;">
+          <input type="hidden" id="df-id">
+          <label>Title
+            <input type="text" id="df-title" required>
+          </label>
+          <label>Description
+            <input type="text" id="df-desc">
+          </label>
+          <label>Link URL
+            <input type="url" id="df-url" required>
+          </label>
+          <div class="form-row">
+            <button class="btn" type="submit" id="df-submit">Add document</button>
+            <button class="btn btn-ghost" type="button" id="df-cancel" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="tab-panel" id="panel-settings" hidden>
+        <h2>Settings</h2>
+        <div class="settings-grid">
+          <div>
+            <h3>Profile</h3>
+            <form id="profileForm" class="stacked">
+              <label>Name
+                <input type="text" id="prof-name">
+              </label>
+              <label>Role
+                <input type="text" id="prof-role">
+              </label>
+              <label>Tagline
+                <input type="text" id="prof-tagline">
+              </label>
+              <label>About
+                <textarea id="prof-about"></textarea>
+              </label>
+              <label>GitHub URL
+                <input type="url" id="prof-github">
+              </label>
+              <div class="form-row">
+                <button class="btn" type="submit">Save profile</button>
+              </div>
+            </form>
+          </div>
+
+          <div>
+            <h3>Change PIN</h3>
+            <form id="pinFormChange" class="stacked">
+              <label>Current PIN
+                <input type="password" id="pin-current" required>
+              </label>
+              <label>New PIN
+                <input type="password" id="pin-new" required>
+              </label>
+              <label>Confirm new PIN
+                <input type="password" id="pin-confirm" required>
+              </label>
+              <div class="form-row">
+                <button class="btn" type="submit">Change PIN</button>
+              </div>
+            </form>
+          </div>
+
+          <div>
+            <h3>Backup &amp; restore</h3>
+            <p class="muted">Export downloads a JSON backup of everything. Import replaces the current content with the file you choose — export a backup first.</p>
+            <div class="form-row">
+              <button class="btn" type="button" id="exportBtn">Export JSON backup</button>
+            </div>
+            <label style="display: grid; gap: 4px; font-weight: 600; font-size: 0.9rem; margin-top: 12px;">Backup file
+              <input type="file" id="importFile" accept=".json,application/json">
+            </label>
+            <label style="display: grid; gap: 4px; font-weight: 600; font-size: 0.9rem; margin-top: 12px;">Or paste JSON
+              <textarea id="importText" style="min-height: 120px;" placeholder="{ &quot;projects&quot;: [ ... ] }"></textarea>
+            </label>
+            <div class="form-row" style="margin-top: 12px;">
+              <button class="btn" type="button" id="importBtn">Import JSON</button>
+            </div>
+            <label style="display: grid; gap: 4px; font-weight: 600; font-size: 0.9rem; margin-top: 12px;">Exported JSON
+              <textarea id="exportOutput" readonly style="min-height: 120px;" placeholder="Your backup will appear here after export."></textarea>
+            </label>
+          </div>
+
+          <div>
+            <h3>Danger zone</h3>
+            <p class="muted">Reset deletes all your edits and restores the original seed content.</p>
+            <button class="btn btn-ghost" type="button" id="resetBtn">Reset to seed content</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevFolio — Md. Rohan Islam · Portfolio &amp; CMS</title>
+  <meta name="description" content="Portfolio of Md. Rohan Islam — mobile app developer (Java, Kotlin, Flutter). Projects, skills, experience, blog and documents, managed with the DevFolio CMS.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="#">Dev<span>Folio</span></a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#experience">Experience</a>
+        <a href="#blog">Blog</a>
+        <a href="#documents">Documents</a>
+        <a href="#contact">Contact</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="role" id="heroRole">Mobile App Developer</div>
+      <h1 id="heroName">Md. Rohan Islam</h1>
+      <p class="tagline" id="heroTagline"></p>
+      <p class="about" id="heroAbout"></p>
+      <div class="hero-links">
+        <a class="btn" id="heroGithub" href="https://github.com/rohan-rusho" target="_blank" rel="noopener">GitHub profile</a>
+        <a class="btn btn-ghost" href="#projects">View projects</a>
+        <a class="btn btn-ghost" href="admin.html">Manage this site</a>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="section-head">
+        <h2>Projects</h2>
+        <span class="count" id="projectCount"></span>
+      </div>
+      <div class="filters" id="projectFilters"></div>
+      <div class="grid" id="projectGrid"></div>
+      <p class="muted" id="projectsEmpty" hidden>No projects yet — add one from the Admin dashboard.</p>
+    </section>
+
+    <section id="skills">
+      <div class="section-head"><h2>Skills</h2></div>
+      <div id="skillsList"></div>
+      <p class="muted" id="skillsEmpty" hidden>No skills listed yet.</p>
+    </section>
+
+    <section id="experience">
+      <div class="section-head"><h2>Experience</h2></div>
+      <div id="experienceList"></div>
+      <p class="muted" id="experienceEmpty" hidden>No experience entries yet.</p>
+    </section>
+
+    <section id="blog">
+      <div class="section-head"><h2>Blog</h2></div>
+      <div class="grid" id="blogList"></div>
+      <p class="muted" id="blogEmpty" hidden>No posts yet — write one from the Admin dashboard.</p>
+    </section>
+
+    <section id="documents">
+      <div class="section-head"><h2>Documents &amp; links</h2></div>
+      <div class="grid" id="documentsList"></div>
+      <p class="muted" id="documentsEmpty" hidden>No documents yet.</p>
+    </section>
+
+    <section id="contact">
+      <div class="section-head"><h2>Contact</h2></div>
+      <div class="contact-box">
+        <p>Want to work together, or talk about a project? The fastest way to reach me is GitHub.</p>
+        <a class="btn" id="contactGithub" href="https://github.com/rohan-rusho" target="_blank" rel="noopener">github.com/rohan-rusho</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>© <span id="year">2026</span> Md. Rohan Islam · Built with DevFolio CMS v1.0.0 — content is managed locally in the Admin dashboard.</span>
+    </div>
+  </footer>
+
+  <div class="modal" id="projectModal" hidden>
+    <div class="modal-box">
+      <button class="modal-close" data-close-modal aria-label="Close">×</button>
+      <div class="card-type" id="projectModalType"></div>
+      <h2 id="projectModalTitle"></h2>
+      <div id="projectModalBody"></div>
+      <div class="tags" id="projectModalTags"></div>
+      <div class="modal-gallery" id="projectModalGallery"></div>
+      <div class="card-links" id="projectModalLinks"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="postModal" hidden>
+    <div class="modal-box">
+      <button class="modal-close" data-close-modal aria-label="Close">×</button>
+      <div class="card-type" id="postModalDate"></div>
+      <h2 id="postModalTitle"></h2>
+      <div id="postModalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
