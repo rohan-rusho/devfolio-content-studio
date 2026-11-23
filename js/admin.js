@@ -128,6 +128,8 @@ function adminEditProject(id) {
   adminEl("pf-repo").value = p.repo || "";
   adminEl("pf-live").value = p.live || "";
   adminEl("pf-gallery").value = (p.gallery || []).join(", ");
+  adminEl("pf-tags").value = (p.tags || []).join(", ");
+  adminEl("pf-featured").checked = !!p.featured;
   adminEl("pf-submit").textContent = "Save changes";
   adminEl("pf-cancel").hidden = false;
   adminEl("projectForm").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -273,6 +275,75 @@ function adminDownload(filename, text) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function adminDownloadText(filename, text, mime) {
+  const blob = new Blob([text], { type: mime || "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function adminSiteUrl() {
+  const base = window.location.href.split("#")[0].replace(/admin\.html$/, "");
+  return base.endsWith("/") ? base : base + "/";
+}
+
+function adminXmlEscape(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function adminBuildSitemap() {
+  const base = adminSiteUrl();
+  const urls = [base, base + "admin.html"];
+  for (const p of adminData.projects) urls.push(base + "#project-" + encodeURIComponent(p.id));
+  for (const post of adminData.posts) urls.push(base + "#post-" + encodeURIComponent(post.id));
+  return (
+    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    urls.map((u) => "  <url><loc>" + adminXmlEscape(u) + "</loc></url>").join("\n") +
+    "\n</urlset>\n"
+  );
+}
+
+function adminBuildRss() {
+  const base = adminSiteUrl();
+  const name = (adminData.profile && adminData.profile.name) || "DevFolio";
+  const items = adminData.posts
+    .map((post) => {
+      const excerpt = String(post.body || "").split(/\n+/)[0].slice(0, 280);
+      const date = post.date ? new Date(post.date + "T00:00:00") : new Date();
+      const pubDate = isNaN(date.getTime()) ? new Date().toUTCString() : date.toUTCString();
+      return (
+        "  <item>\n" +
+        "    <title>" + adminXmlEscape(post.title) + "</title>\n" +
+        "    <link>" + adminXmlEscape(base + "#post-" + encodeURIComponent(post.id)) + "</link>\n" +
+        "    <guid>" + adminXmlEscape(base + "#post-" + encodeURIComponent(post.id)) + "</guid>\n" +
+        "    <pubDate>" + pubDate + "</pubDate>\n" +
+        "    <description>" + adminXmlEscape(excerpt) + "</description>\n" +
+        "  </item>"
+      );
+    })
+    .join("\n");
+  return (
+    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<rss version="2.0">\n<channel>\n' +
+    "  <title>" + adminXmlEscape(name + " — Blog") + "</title>\n" +
+    "  <link>" + adminXmlEscape(base) + "</link>\n" +
+    "  <description>" + adminXmlEscape("Blog posts from " + name + ", published with DevFolio CMS.") + "</description>\n" +
+    items +
+    "\n</channel>\n</rss>\n"
+  );
+}
+
 // ---- wiring ----
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -321,7 +392,9 @@ document.addEventListener("DOMContentLoaded", () => {
       stack: adminSplitList(adminEl("pf-stack").value),
       repo: adminEl("pf-repo").value.trim(),
       live: adminEl("pf-live").value.trim(),
-      gallery: adminSplitList(adminEl("pf-gallery").value)
+      gallery: adminSplitList(adminEl("pf-gallery").value),
+      tags: adminSplitList(adminEl("pf-tags").value),
+      featured: adminEl("pf-featured").checked
     };
     if (!item.title) {
       adminShowStatus("A project needs a title.", true);
@@ -455,6 +528,16 @@ document.addEventListener("DOMContentLoaded", () => {
     adminEl("exportOutput").value = json;
     adminDownload("devfolio-backup.json", json);
     adminShowStatus("Backup downloaded and shown below — keep it safe.");
+  });
+
+  adminEl("exportSitemapBtn").addEventListener("click", () => {
+    adminDownloadText("sitemap.xml", adminBuildSitemap(), "application/xml");
+    adminShowStatus("sitemap.xml downloaded — generated from your current content. Upload it to the site root (next to index.html) to publish it.");
+  });
+
+  adminEl("exportRssBtn").addEventListener("click", () => {
+    adminDownloadText("feed.xml", adminBuildRss(), "application/rss+xml");
+    adminShowStatus("feed.xml downloaded — generated from your current blog posts. Upload it to the site root (next to index.html) to publish it.");
   });
 
   adminEl("importBtn").addEventListener("click", () => {

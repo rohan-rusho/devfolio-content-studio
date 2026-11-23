@@ -20,6 +20,7 @@
         <a href="#documents">Documents</a>
         <a href="#contact">Contact</a>
         <a href="admin.html">Admin</a>
+        <button class="btn-small" id="themeToggle" type="button">Dark mode</button>
       </nav>
     </div>
   </header>
@@ -43,6 +44,14 @@
         <span class="count" id="projectCount"></span>
       </div>
       <div class="filters" id="projectFilters"></div>
+      <div class="project-controls">
+        <input type="search" id="projectSearch" placeholder="Search projects by name, stack or tag…" aria-label="Search projects">
+        <select id="projectSort" aria-label="Sort projects">
+          <option value="featured">Featured first</option>
+          <option value="az">A–Z</option>
+          <option value="type">By type</option>
+        </select>
+      </div>
       <div class="grid" id="projectGrid"></div>
       <p class="muted" id="projectsEmpty" hidden>No projects yet — add one from the Admin dashboard.</p>
     </section>
@@ -82,7 +91,7 @@
 
   <footer class="site-footer">
     <div class="container">
-      <span>© <span id="year">2026</span> Md. Rohan Islam · Built with DevFolio CMS v1.0.0 — content is managed locally in the Admin dashboard.</span>
+      <span>© <span id="year">2026</span> Md. Rohan Islam · Built with DevFolio CMS v1.1.0 — content is managed locally in the Admin dashboard.</span>
     </div>
   </footer>
 

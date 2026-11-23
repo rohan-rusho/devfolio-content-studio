@@ -18,6 +18,31 @@ function devfolioParagraphs(text) {
 
 let devfolioData = null;
 let devfolioFilter = "All";
+let devfolioQuery = "";
+let devfolioSort = "featured";
+
+function devfolioReadingTime(text) {
+  const words = String(text || "").trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
+
+function devfolioApplyTheme() {
+  let theme = "light";
+  try {
+    theme = localStorage.getItem("devfolio.theme") || "light";
+  } catch (_) {}
+  document.body.classList.toggle("dark", theme === "dark");
+  const btn = document.getElementById("themeToggle");
+  if (btn) btn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+}
+
+function devfolioToggleTheme() {
+  const dark = !document.body.classList.contains("dark");
+  try {
+    localStorage.setItem("devfolio.theme", dark ? "dark" : "light");
+  } catch (_) {}
+  devfolioApplyTheme();
+}
 
 function devfolioRenderAll() {
   devfolioData = devfolioLoad();
@@ -44,6 +69,29 @@ function devfolioRenderProfile() {
   if (gh && p.github) gh.href = p.github;
   const cg = document.getElementById("contactGithub");
   if (cg && p.github) cg.href = p.github;
+  // Structured data for search engines, built from the live content so
+  // admin edits are reflected (not a frozen copy of the seed).
+  const old = document.getElementById("jsonld");
+  if (old) old.remove();
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: p.name || "",
+    jobTitle: p.role || "",
+    url: p.github || "",
+    description: p.tagline || "",
+    hasPart: (devfolioData.projects || []).map((proj) => ({
+      "@type": "CreativeWork",
+      name: proj.title,
+      description: proj.description,
+      url: proj.repo || undefined
+    }))
+  };
+  const script = document.createElement("script");
+  script.type = "application/ld+json";
+  script.id = "jsonld";
+  script.textContent = JSON.stringify(ld);
+  document.head.appendChild(script);
 }
 
 function devfolioProjectTypes() {
@@ -83,9 +131,30 @@ function devfolioRenderProjects() {
   const count = document.getElementById("projectCount");
   const empty = document.getElementById("projectsEmpty");
   if (!grid) return;
-  const list = devfolioData.projects.filter(
-    (p) => devfolioFilter === "All" || p.type === devfolioFilter
-  );
+  const list = devfolioData.projects
+    .filter((p) => devfolioFilter === "All" || p.type === devfolioFilter)
+    .filter((p) => {
+      if (!devfolioQuery) return true;
+      const hay = [p.title, p.description, p.type, (p.stack || []).join(" "), (p.tags || []).join(" ")]
+        .join(" ")
+        .toLowerCase();
+      return devfolioQuery.split(/\s+/).every((word) => hay.includes(word));
+    });
+  if (devfolioSort === "az") {
+    list.sort((a, b) => String(a.title).localeCompare(String(b.title)));
+  } else if (devfolioSort === "type") {
+    list.sort(
+      (a, b) =>
+        String(a.type).localeCompare(String(b.type)) ||
+        String(a.title).localeCompare(String(b.title))
+    );
+  } else {
+    list.sort(
+      (a, b) =>
+        (b.featured ? 1 : 0) - (a.featured ? 1 : 0) ||
+        String(a.title).localeCompare(String(b.title))
+    );
+  }
   if (count) count.textContent = list.length + (list.length === 1 ? " project" : " projects");
   if (empty) empty.hidden = list.length !== 0;
   grid.innerHTML = list
@@ -96,6 +165,7 @@ function devfolioRenderProjects() {
         '">' +
         '<div class="card-type">' +
         devfolioEscape(p.type || "Project") +
+        (p.featured ? ' <span class="featured-badge">Featured</span>' : "") +
         "</div>" +
         "<h3>" +
         devfolioEscape(p.title) +
@@ -106,6 +176,9 @@ function devfolioRenderProjects() {
         '<div class="tags">' +
         (p.stack || [])
           .map((s) => '<span class="tag">' + devfolioEscape(s) + "</span>")
+          .join("") +
+        (p.tags || [])
+          .map((t) => '<span class="tag tag-topic">#' + devfolioEscape(t) + "</span>")
           .join("") +
         "</div>" +
         '<div class="card-links">' +
@@ -210,6 +283,9 @@ function devfolioRenderPosts() {
       (post) =>
         '<article class="card post-card"><div class="card-type">' +
         devfolioEscape(post.date || "") +
+        " · " +
+        devfolioReadingTime(post.body) +
+        " min read" +
         "</div>" +
         "<h3>" +
         devfolioEscape(post.title) +
@@ -230,7 +306,8 @@ function devfolioOpenPost(id) {
   const post = devfolioData.posts.find((x) => x.id === id);
   if (!post) return;
   document.getElementById("postModalTitle").textContent = post.title;
-  document.getElementById("postModalDate").textContent = post.date || "";
+  document.getElementById("postModalDate").textContent =
+    (post.date || "") + " · " + devfolioReadingTime(post.body) + " min read";
   document.getElementById("postModalBody").innerHTML = devfolioParagraphs(post.body);
   devfolioShowModal("postModal");
 }
@@ -268,7 +345,24 @@ function devfolioHideModals() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  devfolioApplyTheme();
   devfolioRenderAll();
+  const themeBtn = document.getElementById("themeToggle");
+  if (themeBtn) themeBtn.addEventListener("click", devfolioToggleTheme);
+  const search = document.getElementById("projectSearch");
+  if (search) {
+    search.addEventListener("input", () => {
+      devfolioQuery = search.value.trim().toLowerCase();
+      devfolioRenderProjects();
+    });
+  }
+  const sort = document.getElementById("projectSort");
+  if (sort) {
+    sort.addEventListener("change", () => {
+      devfolioSort = sort.value;
+      devfolioRenderProjects();
+    });
+  }
   document.querySelectorAll("[data-close-modal]").forEach((btn) => {
     btn.addEventListener("click", devfolioHideModals);
   });

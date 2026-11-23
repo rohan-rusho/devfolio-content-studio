@@ -1,6 +1,6 @@
 # DevFolio CMS — Dynamic Portfolio & Content Management Platform
 
-**Version:** 1.0.0 · **Stack:** plain HTML, CSS and JavaScript — no build step, no dependencies, no server.
+**Version:** 1.1.0 · **Stack:** plain HTML, CSS and JavaScript — no build step, no dependencies, no server.
 
 DevFolio is a minimal editorial portfolio whose content is managed through a private admin dashboard. The public pages render from the same data the admin edits, so changes show immediately. It ships seeded with real work by Md. Rohan Islam (Speed, CVora, RequestLab, Toaster Roaster, open-source contributions and more) — not lorem ipsum.
 
@@ -20,12 +20,21 @@ python -m http.server 8000
 
 Or just open `index.html` in a browser — everything works from `file://` too (localStorage is per-origin, so edits made on `file://` stay on `file://`).
 
-## What is in v1
+## What is in v1.1
 
 - **Public portfolio** — hero, filterable projects grid with detail view and gallery, skills, experience timeline, blog with post view, documents & links, contact.
-- **Admin dashboard** (`admin.html`, PIN-gated) — add, edit and delete projects (title, description, stack, repo/live links, gallery image URLs), skills, experience entries, blog posts and documents; edit the profile; live preview link.
+- **Search, sort & featured** — live search across project names, descriptions, stacks and tags; sort by Featured first, A–Z or type; featured projects carry a badge and sort first.
+- **Tags** — projects carry topic tags (`#media`, `#api` …) alongside their stack; add or edit them in Admin.
+- **Reading time** — blog cards and posts show an honest "X min read".
+- **Dark mode** — toggle in the header, remembered in the browser.
+- **SEO** — structured data (JSON-LD Person + projects) is generated from the live content, and Admin → Settings exports a `sitemap.xml` and an RSS `feed.xml` built from the current content (upload the downloaded files to the site root to publish them).
+- **Admin dashboard** (`admin.html`, PIN-gated) — add, edit and delete projects (title, description, stack, tags, featured, repo/live links, gallery image URLs), skills, experience entries, blog posts and documents; edit the profile; live preview link.
 - **Data** — everything in `localStorage`. Export all content as JSON, import JSON, reset to seed data. Loading, empty and bad-import states are handled in plain words.
-- **Design** — minimal editorial style in the brief's colours (`#FAFAF9`, `#FFFFFF`, `#292524`, `#0D9488`), responsive.
+- **Design** — minimal editorial style in the brief's colours (`#FAFAF9`, `#FFFFFF`, `#292524`, `#0D9488`), responsive, light + dark.
+
+## v1.0
+
+First release: public portfolio + PIN-gated admin + localStorage CMS with seed content.
 
 ## Admin PIN
 
@@ -47,10 +56,10 @@ js/app.js           public rendering
 js/admin.js         admin dashboard + PIN gate
 ```
 
-## Roadmap (v1.1 / v2)
+## Roadmap (v1.2 / v2)
 
-- v1.1: search, tags, RSS/sitemap.
-- v2: Spring Boot + PostgreSQL backend, server login with roles, image uploads, analytics.
+- v1.2: per-project pages (real URLs instead of `#project-…` anchors), tag filter pills, contact form.
+- v2: real backend — Spring Boot + PostgreSQL, or Supabase (PostgreSQL + real auth) with the static site — so edits are visible to every visitor, with server login and roles, image uploads and analytics. Needs a hosting/account decision first.
 
 ## License
 

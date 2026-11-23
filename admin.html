@@ -73,6 +73,13 @@
           <label>Stack (comma-separated)
             <input type="text" id="pf-stack" placeholder="JavaScript, Node.js">
           </label>
+          <label>Tags (comma-separated, shown as #topics)
+            <input type="text" id="pf-tags" placeholder="media, streaming">
+          </label>
+          <label style="display: flex; gap: 8px; align-items: center; font-weight: 400;">
+            <input type="checkbox" id="pf-featured" style="width: auto;">
+            Featured — show first with a Featured badge
+          </label>
           <label>Repository URL
             <input type="url" id="pf-repo" placeholder="https://github.com/rohan-rusho/...">
           </label>
@@ -223,7 +230,10 @@
             <p class="muted">Export downloads a JSON backup of everything. Import replaces the current content with the file you choose — export a backup first.</p>
             <div class="form-row">
               <button class="btn" type="button" id="exportBtn">Export JSON backup</button>
+              <button class="btn btn-ghost" type="button" id="exportSitemapBtn">Export sitemap.xml</button>
+              <button class="btn btn-ghost" type="button" id="exportRssBtn">Export feed.xml (RSS)</button>
             </div>
+            <p class="muted">Sitemap and RSS are generated from your current content. Upload the downloaded files to the site root (next to index.html) to publish them.</p>
             <label style="display: grid; gap: 4px; font-weight: 600; font-size: 0.9rem; margin-top: 12px;">Backup file
               <input type="file" id="importFile" accept=".json,application/json">
             </label>

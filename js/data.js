@@ -21,6 +21,8 @@ const DEV_FOLIO_SEED = {
       id: "p-speed",
       title: "Speed",
       type: "Web App",
+      featured: true,
+      tags: ["media", "lan", "streaming", "dual-audio"],
       description:
         "Premium LAN file & media server. Fast range streaming, dual-audio movies with language switching, thumbnails, subtitles, resume playback, fast zip downloads, file manager with trash, drag-drop upload and a glassmorphism UI with light/dark themes.",
       stack: ["Node.js", "Express", "JavaScript", "FFmpeg", "Plyr"],
@@ -32,6 +34,8 @@ const DEV_FOLIO_SEED = {
       id: "p-cvora",
       title: "CVora — Professional Resume Studio",
       type: "Web App",
+      featured: true,
+      tags: ["cv", "resume", "templates", "export"],
       description:
         "Premium CV and resume builder with 55 genuinely different templates, a 9-step editor, live preview, full design customization, multi-format export (PDF, PNG, JPG, TXT, HTML, JSON), ATS checker, cover letter builder, version history and a job applications tracker.",
       stack: ["HTML", "CSS", "JavaScript"],
@@ -43,6 +47,8 @@ const DEV_FOLIO_SEED = {
       id: "p-requestlab",
       title: "RequestLab",
       type: "Web App",
+      featured: true,
+      tags: ["api", "rest", "websocket", "debugging"],
       description:
         "API testing and debugging client in the browser: REST request builder with auth and environments, {{variable}} substitution, collections, history, response inspector and a WebSocket tester. A Postman-style workflow with no install.",
       stack: ["HTML", "CSS", "JavaScript", "WebSocket"],
@@ -54,6 +60,8 @@ const DEV_FOLIO_SEED = {
       id: "p-toaster",
       title: "Toaster Roaster",
       type: "Web App",
+      featured: false,
+      tags: ["fun", "generator", "jokes"],
       description:
         "Roast joke generator with 102 roasts and 12 self-roasts across 7 categories and 4 heat levels. Name/target generator, daily roast, 3-round roast battle, favorites and history, burn meter and a toaster shake-and-pop animation.",
       stack: ["HTML", "CSS", "JavaScript"],
@@ -65,6 +73,8 @@ const DEV_FOLIO_SEED = {
       id: "p-mdm",
       title: "Mister Download Manager — live-update fix",
       type: "Open Source",
+      featured: false,
+      tags: ["rust", "open-source", "contribution"],
       description:
         "Open-source contribution to Mister Download Manager (Rust + egui). Fixed the main list so downloaded bytes and progress update on a steady 250 ms clock instead of only racing when the mouse moves — the version the maintainer reviewed and approved.",
       stack: ["Rust", "egui", "Open Source"],
@@ -76,6 +86,8 @@ const DEV_FOLIO_SEED = {
       id: "p-password",
       title: "Password Generator",
       type: "Tool",
+      featured: false,
+      tags: ["security", "tool"],
       description:
         "Small web tool that generates strong passwords with length and character controls, strength meter and one-click copy. One of 20 small web apps shipped as public repos.",
       stack: ["HTML", "CSS", "JavaScript"],
@@ -87,6 +99,8 @@ const DEV_FOLIO_SEED = {
       id: "p-snake",
       title: "Snake Game",
       type: "Tool",
+      featured: false,
+      tags: ["game"],
       description:
         "Classic Snake in the browser with keyboard controls, score tracking and increasing speed. One of 20 small web apps shipped as public repos.",
       stack: ["HTML", "CSS", "JavaScript"],
@@ -98,6 +112,8 @@ const DEV_FOLIO_SEED = {
       id: "p-pomodoro",
       title: "Pomodoro Focus Timer",
       type: "Tool",
+      featured: false,
+      tags: ["productivity", "timer"],
       description:
         "Focus timer with work/break cycles, session counts and a clean, distraction-free layout. One of 20 small web apps shipped as public repos.",
       stack: ["HTML", "CSS", "JavaScript"],
