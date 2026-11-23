@@ -347,6 +347,16 @@ function devfolioHideModals() {
 document.addEventListener("DOMContentLoaded", () => {
   devfolioApplyTheme();
   devfolioRenderAll();
+  // If cloud sync is configured, replace the local copy with the saved
+  // cloud content when it differs — so a revisit shows saved progress
+  // instead of this browser's copy.
+  if (typeof devfolioCloudRefreshIfConfigured === "function") {
+    devfolioCloudRefreshIfConfigured()
+      .then((res) => {
+        if (res && res.changed) devfolioRenderAll();
+      })
+      .catch(() => {});
+  }
   const themeBtn = document.getElementById("themeToggle");
   if (themeBtn) themeBtn.addEventListener("click", devfolioToggleTheme);
   const search = document.getElementById("projectSearch");

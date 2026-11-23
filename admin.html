@@ -184,6 +184,38 @@
         <h2>Settings</h2>
         <div class="settings-grid">
           <div>
+            <h3>Cloud sync (Supabase)</h3>
+            <p class="muted">Optional. Without this, content lives in this browser only. With it, content lives in your Supabase database — a revisit from any browser or device shows what you saved. Public read for visitors; only a signed-in admin can write. Setup: free project at supabase.com → run <code>supabase/schema.sql</code> in the SQL editor → create one Auth user → paste the URL + anon key below.</p>
+            <div class="stacked">
+              <label>Supabase project URL
+                <input type="url" id="cloud-url" placeholder="https://xyzcompany.supabase.co">
+              </label>
+              <label>Anon key (public — never the service_role key)
+                <input type="text" id="cloud-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…">
+              </label>
+              <div class="form-row">
+                <button class="btn" type="button" id="cloudSaveBtn">Save cloud settings</button>
+                <button class="btn btn-ghost" type="button" id="cloudClearBtn">Disconnect</button>
+              </div>
+              <p class="muted" id="cloudStatus">Cloud sync is not configured.</p>
+              <label>Admin email
+                <input type="email" id="cloud-email" placeholder="you@example.com">
+              </label>
+              <label>Admin password
+                <input type="password" id="cloud-password">
+              </label>
+              <div class="form-row">
+                <button class="btn" type="button" id="cloudSignInBtn">Sign in as admin</button>
+                <button class="btn btn-ghost" type="button" id="cloudSignOutBtn">Sign out</button>
+              </div>
+              <div class="form-row">
+                <button class="btn" type="button" id="cloudPushBtn">Push local content to cloud</button>
+                <button class="btn btn-ghost" type="button" id="cloudPullBtn">Pull cloud content here</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
             <h3>Profile</h3>
             <form id="profileForm" class="stacked">
               <label>Name
@@ -260,6 +292,8 @@
 
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/cloud.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

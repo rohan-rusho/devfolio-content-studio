@@ -47,6 +47,7 @@ function adminShowApp() {
   adminEl("adminApp").hidden = false;
   adminData = devfolioLoad();
   adminRenderAll();
+  adminRenderCloud();
 }
 
 function adminRenderAll() {
@@ -261,6 +262,21 @@ function adminRenderProfileForm() {
   adminEl("prof-tagline").value = p.tagline || "";
   adminEl("prof-about").value = p.about || "";
   adminEl("prof-github").value = p.github || "";
+}
+
+async function adminRenderCloud() {
+  const cfg = devfolioCloudConfig();
+  adminEl("cloud-url").value = (cfg && cfg.url) || "";
+  adminEl("cloud-key").value = (cfg && cfg.anonKey) || "";
+  const status = adminEl("cloudStatus");
+  if (!devfolioCloudConfigured()) {
+    status.textContent = "Cloud sync is not configured.";
+    return;
+  }
+  const email = await devfolioCloudSessionEmail();
+  status.textContent = email
+    ? "Connected. Signed in as " + email + " — pushing and pulling are enabled."
+    : "Connected, but not signed in — sign in below to push or pull. Visitors can already read from the cloud.";
 }
 
 function adminDownload(filename, text) {
@@ -572,5 +588,78 @@ document.addEventListener("DOMContentLoaded", () => {
     adminData = devfolioReset();
     adminRenderAll();
     adminShowStatus("Reset to seed content.");
+  });
+
+  adminEl("cloudSaveBtn").addEventListener("click", () => {
+    const url = adminEl("cloud-url").value.trim();
+    const anonKey = adminEl("cloud-key").value.trim();
+    if (!url || !anonKey) {
+      adminShowStatus("Paste both the Supabase project URL and the anon key.", true);
+      return;
+    }
+    if (/service_role/i.test(anonKey)) {
+      adminShowStatus("That looks like a service_role key — never use it here. Use the anon key from Settings → API.", true);
+      return;
+    }
+    devfolioCloudSaveConfig({ url: url, anonKey: anonKey });
+    adminRenderCloud();
+    adminShowStatus("Cloud settings saved. Sign in below, then push your local content to the cloud once.");
+  });
+
+  adminEl("cloudClearBtn").addEventListener("click", async () => {
+    await devfolioCloudSignOut();
+    devfolioCloudClearConfig();
+    adminRenderCloud();
+    adminShowStatus("Cloud sync disconnected. Content stays in this browser only.");
+  });
+
+  adminEl("cloudSignInBtn").addEventListener("click", async () => {
+    const email = adminEl("cloud-email").value.trim();
+    const password = adminEl("cloud-password").value;
+    if (!email || !password) {
+      adminShowStatus("Enter your admin email and password.", true);
+      return;
+    }
+    const res = await devfolioCloudSignIn(email, password);
+    if (!res.ok) {
+      adminShowStatus(res.error, true);
+      return;
+    }
+    adminEl("cloud-password").value = "";
+    await adminRenderCloud();
+    adminShowStatus("Signed in as " + res.email + ".");
+  });
+
+  adminEl("cloudSignOutBtn").addEventListener("click", async () => {
+    await devfolioCloudSignOut();
+    await adminRenderCloud();
+    adminShowStatus("Signed out. Visitors can still read the cloud content.");
+  });
+
+  adminEl("cloudPushBtn").addEventListener("click", async () => {
+    adminShowStatus("Pushing to the cloud…");
+    const res = await devfolioCloudPush(devfolioLoad());
+    if (!res.ok) {
+      adminShowStatus(res.error, true);
+      return;
+    }
+    await adminRenderCloud();
+    adminShowStatus("Pushed. Every revisit — any browser, any device — now shows this saved content.");
+  });
+
+  adminEl("cloudPullBtn").addEventListener("click", async () => {
+    const res = await devfolioCloudPull();
+    if (!res.ok) {
+      adminShowStatus(res.error, true);
+      return;
+    }
+    if (res.empty) {
+      adminShowStatus("The cloud is empty — nothing to pull. Push your local content first.");
+      return;
+    }
+    adminData = res.data;
+    devfolioSave(adminData);
+    adminRenderAll();
+    adminShowStatus("Pulled the cloud content into this browser.");
   });
 });
